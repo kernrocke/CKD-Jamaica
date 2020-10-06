@@ -1,0 +1,83 @@
+ *Imputation for GFR
+. 
+. preserve
+
+. 
+. misstable summarize gestage_new blength if ckd_miss==0
+                                                               Obs<.
+                                                +------------------------------
+               |                                | Unique
+      Variable |     Obs=.     Obs>.     Obs<.  | values        Min         Max
+  -------------+--------------------------------+------------------------------
+   gestage_new |        84                 660  |     94         26    43.85714
+       blength |        23                 721  |     28         28          61
+  -----------------------------------------------------------------------------
+
+. 
+. mi set mlong
+
+. 
+.  mi register imputed  gestage_new blength 
+(198 m=0 obs. now marked as incomplete)
+
+. 
+.  set seed 29390 
+
+.  
+.  mi impute chained (regress) gestage_new (regress) blength = gfr_MDRD sex_new q112age bwt_std  if ckd_miss== 0, add
+> (20) 
+
+Conditional models:
+           blength: regress blength gestage_new gfr_MDRD sex_new q112age bwt_std if ckd_miss== 0
+       gestage_new: regress gestage_new blength gfr_MDRD sex_new q112age bwt_std if ckd_miss== 0
+
+Performing chained iterations ...
+
+Multivariate imputation                     Imputations =       20
+Chained equations                                 added =       20
+Imputed: m=1 through m=20                       updated =        0
+
+Initialization: monotone                     Iterations =      200
+                                                burn-in =       10
+
+       gestage_new: linear regression
+           blength: linear regression
+
+------------------------------------------------------------------
+                   |               Observations per m             
+                   |----------------------------------------------
+          Variable |   Complete   Incomplete   Imputed |     Total
+-------------------+-----------------------------------+----------
+       gestage_new |        660           84        84 |       744
+           blength |        721           23        23 |       744
+------------------------------------------------------------------
+(complete + incomplete = total; imputed is the minimum across m
+ of the number of filled-in observations.)
+
+.  
+.  *Model 0 Multi Level Modeling with Imputation (2 Levels)
+. mi estimate: regress gfr_MDRD bwt_std blength gestage_new place_birth if ckd_miss== 0
+
+Multiple-imputation estimates                     Imputations     =         20
+Linear regression                                 Number of obs   =        744
+                                                  Average RVI     =     0.0234
+                                                  Largest FMI     =     0.0744
+                                                  Complete DF     =        739
+DF adjustment:   Small sample                     DF:     min     =     571.39
+                                                          avg     =     671.23
+                                                          max     =     736.92
+Model F test:       Equal FMI                     F(   4,  730.5) =       0.60
+Within VCE type:          OLS                     Prob > F        =     0.6604
+
+------------------------------------------------------------------------------
+    gfr_MDRD |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     bwt_std |   .2490075   2.627848     0.09   0.925    -4.910166    5.408181
+     blength |   .4811725   .6104662     0.79   0.431    -.7174906    1.679835
+ gestage_new |  -.5095813   .9418954    -0.54   0.589    -2.359581    1.340418
+ place_birth |  -.3520216   .2934998    -1.20   0.231     -.928217    .2241739
+       _cons |   157.1947   43.91882     3.58   0.000      70.9574     243.432
+------------------------------------------------------------------------------
+
+. 
+. restore

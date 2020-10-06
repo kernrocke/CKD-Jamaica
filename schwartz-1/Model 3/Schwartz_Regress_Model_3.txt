@@ -1,0 +1,155 @@
+ *Imputation for GFR Schwarz 2009
+. 
+. preserve
+
+. 
+. misstable summarize gestage_new blength bmi own_education own_occup_cat2 ageatbrth edcat3 occ_cat_mom1a htn_preg sm
+> oker if ckd_miss==0
+                                                               Obs<.
+                                                +------------------------------
+               |                                | Unique
+      Variable |     Obs=.     Obs>.     Obs<.  | values        Min         Max
+  -------------+--------------------------------+------------------------------
+   gestage_new |        84                 660  |     94         26    43.85714
+       blength |        23                 721  |     28         28          61
+           bmi |         1                 743  |   >500   13.92261    47.03529
+  own_occup_~2 |         8                 736  |      3          1           3
+     ageatbrth |         7                 737  |   >500   14.03696    45.90554
+        edcat3 |        24                 720  |      3          1           3
+  occ_cat_m~1a |        44                 700  |      4          1           4
+      htn_preg |        79                 665  |      2          0           1
+        smoker |        19                 725  |      2          0           1
+  -----------------------------------------------------------------------------
+
+. 
+. mi set mlong
+
+. 
+.  mi register imputed  gestage_new blength preterm bmi own_education own_occup_cat2 ageatbrth edcat3 occ_cat_mom1a h
+> tn_preg smoker
+(322 m=0 obs. now marked as incomplete)
+
+. 
+.  set seed 293900 
+
+.  
+.  mi impute chained (regress) gestage_new (regress) blength (regress) bmi (ologit) own_education (ologit) own_occup_
+> cat2 (regress) ageatbrth (ologit) edcat3 (ologit) occ_cat_mom1a (logit) htn_preg (logit, augment) smoker = gfr_SW s
+> ex_new q112age bwt_std  if ckd_miss== 0, add(20) 
+note: variable own_education contains no soft missing (.) values; imputing nothing
+
+Conditional models:
+               bmi: regress bmi i.own_education ageatbrth i.own_occup_cat2 i.smoker blength i.edcat3
+                     i.occ_cat_mom1a i.htn_preg gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+         ageatbrth: regress ageatbrth i.own_education bmi i.own_occup_cat2 i.smoker blength i.edcat3
+                     i.occ_cat_mom1a i.htn_preg gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+    own_occup_cat2: ologit own_occup_cat2 i.own_education bmi ageatbrth i.smoker blength i.edcat3 i.occ_cat_mom1a
+                     i.htn_preg gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+            smoker: logit smoker i.own_education bmi ageatbrth i.own_occup_cat2 blength i.edcat3 i.occ_cat_mom1a
+                     i.htn_preg gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0, augment
+           blength: regress blength i.own_education bmi ageatbrth i.own_occup_cat2 i.smoker i.edcat3
+                     i.occ_cat_mom1a i.htn_preg gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+            edcat3: ologit edcat3 i.own_education bmi ageatbrth i.own_occup_cat2 i.smoker blength i.occ_cat_mom1a
+                     i.htn_preg gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+     occ_cat_mom1a: ologit occ_cat_mom1a i.own_education bmi ageatbrth i.own_occup_cat2 i.smoker blength i.edcat3
+                     i.htn_preg gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+          htn_preg: logit htn_preg i.own_education bmi ageatbrth i.own_occup_cat2 i.smoker blength i.edcat3
+                     i.occ_cat_mom1a gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+       gestage_new: regress gestage_new i.own_education bmi ageatbrth i.own_occup_cat2 i.smoker blength i.edcat3
+                     i.occ_cat_mom1a i.htn_preg gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+
+Performing chained iterations ...
+
+Multivariate imputation                     Imputations =       20
+Chained equations                                 added =       20
+Imputed: m=1 through m=20                       updated =        0
+
+Initialization: monotone                     Iterations =      200
+                                                burn-in =       10
+
+       gestage_new: linear regression
+           blength: linear regression
+               bmi: linear regression
+     own_education: ordered logistic regression
+    own_occup_cat2: ordered logistic regression
+         ageatbrth: linear regression
+            edcat3: ordered logistic regression
+     occ_cat_mom1a: ordered logistic regression
+          htn_preg: logistic regression
+            smoker: augmented logistic regression
+
+------------------------------------------------------------------
+                   |               Observations per m             
+                   |----------------------------------------------
+          Variable |   Complete   Incomplete   Imputed |     Total
+-------------------+-----------------------------------+----------
+       gestage_new |        660           84        84 |       744
+           blength |        721           23        23 |       744
+               bmi |        743            1         1 |       744
+     own_education |        744            0         0 |       744
+    own_occup_cat2 |        736            8         8 |       744
+         ageatbrth |        737            7         7 |       744
+            edcat3 |        720           24        24 |       744
+     occ_cat_mom1a |        700           44        44 |       744
+          htn_preg |        665           79        79 |       744
+            smoker |        725           19        19 |       744
+------------------------------------------------------------------
+(complete + incomplete = total; imputed is the minimum across m
+ of the number of filled-in observations.)
+
+Warning: the sets of predictors of the imputation model vary across
+         imputations or iterations
+
+.  
+. *Model 3 Multi Level Modeling with Imputation (2 Levels)
+. mi estimate: regress gfr_SW bwt_std blength gestage_new sex_new q112age bmi i.own_education i.own_occup_cat2 ageatb
+> rth i.edcat3 i.occ_cat_mom1a i.htn_preg i.smoker place_birth if ckd_miss== 0
+
+Multiple-imputation estimates                     Imputations     =         20
+Linear regression                                 Number of obs   =        744
+                                                  Average RVI     =     0.0417
+                                                  Largest FMI     =     0.2913
+                                                  Complete DF     =        724
+DF adjustment:   Small sample                     DF:     min     =     161.40
+                                                          avg     =     644.80
+                                                          max     =     720.75
+Model F test:       Equal FMI                     F(  19,  719.2) =      10.34
+Within VCE type:          OLS                     Prob > F        =     0.0000
+
+--------------------------------------------------------------------------------
+        gfr_SW |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       bwt_std |   1.710113    1.39512     1.23   0.221    -1.029175    4.449402
+       blength |   .2726176    .324858     0.84   0.402    -.3652594    .9104946
+   gestage_new |  -.6019343   .5046832    -1.19   0.234    -1.594062    .3901937
+       sex_new |  -28.31421   2.229619   -12.70   0.000    -32.69153   -23.93688
+       q112age |  -5.064971   1.841891    -2.75   0.006    -8.681102    -1.44884
+           bmi |   .0640847   .2151384     0.30   0.766    -.3582891    .4864585
+               |
+ own_education |
+            2  |   6.902472   3.578266     1.93   0.054    -.1226095    13.92755
+            3  |     6.7592   4.579777     1.48   0.140    -2.232173    15.75057
+               |
+own_occup_cat2 |
+            2  |   2.652426   2.688385     0.99   0.324    -2.626037    7.930889
+            3  |    2.51244   2.853309     0.88   0.379    -3.089596    8.114477
+               |
+     ageatbrth |    .076472   .2016959     0.38   0.705    -.3195127    .4724567
+               |
+        edcat3 |
+            2  |   3.721472   2.701897     1.38   0.169    -1.583978    9.026923
+            3  |   3.202185   3.774412     0.85   0.397    -4.209026     10.6134
+               |
+ occ_cat_mom1a |
+            2  |   5.252281   3.489401     1.51   0.133    -1.599332    12.10389
+            3  |     7.4596   3.265878     2.28   0.023     1.047045    13.87215
+            4  |    6.02353   3.245649     1.86   0.064    -.3491804    12.39624
+               |
+    1.htn_preg |   5.446251   4.317697     1.26   0.209    -3.080211    13.97271
+      1.smoker |   .0211977   4.239437     0.01   0.996     -8.30535    8.347745
+   place_birth |   -.284854    .155202    -1.84   0.067    -.5895575    .0198496
+         _cons |   200.7934    42.8943     4.68   0.000     116.5682    285.0187
+--------------------------------------------------------------------------------
+
+. 
+. restore

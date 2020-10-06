@@ -1,0 +1,85 @@
+. *Imputation for GFR CKD-EPI
+. 
+. preserve
+
+. 
+. misstable summarize gestage_new blength if ckd_miss==0
+                                                               Obs<.
+                                                +------------------------------
+               |                                | Unique
+      Variable |     Obs=.     Obs>.     Obs<.  | values        Min         Max
+  -------------+--------------------------------+------------------------------
+   gestage_new |        84                 660  |     94         26    43.85714
+       blength |        23                 721  |     28         28          61
+  -----------------------------------------------------------------------------
+
+. 
+. mi set mlong
+
+. 
+.  mi register imputed  gestage_new blength 
+(198 m=0 obs. now marked as incomplete)
+
+. 
+.  set seed 29390 
+
+.  
+.  mi impute chained (regress) gestage_new (regress) blength = gfr_ckd_epi sex_new q112age bwt_std  if ckd_miss== 0, 
+> add(20) 
+
+Conditional models:
+           blength: regress blength gestage_new gfr_ckd_epi sex_new q112age bwt_std if ckd_miss== 0
+       gestage_new: regress gestage_new blength gfr_ckd_epi sex_new q112age bwt_std if ckd_miss== 0
+
+Performing chained iterations ...
+
+Multivariate imputation                     Imputations =       20
+Chained equations                                 added =       20
+Imputed: m=1 through m=20                       updated =        0
+
+Initialization: monotone                     Iterations =      200
+                                                burn-in =       10
+
+       gestage_new: linear regression
+           blength: linear regression
+
+------------------------------------------------------------------
+                   |               Observations per m             
+                   |----------------------------------------------
+          Variable |   Complete   Incomplete   Imputed |     Total
+-------------------+-----------------------------------+----------
+       gestage_new |        660           84        84 |       744
+           blength |        721           23        23 |       744
+------------------------------------------------------------------
+(complete + incomplete = total; imputed is the minimum across m
+ of the number of filled-in observations.)
+
+.  
+.  *Model 1 Regression with Imputation (2 Levels)
+. mi estimate: regress gfr_ckd_epi bwt_std blength gestage_new sex_new q112age place_birth if ckd_miss== 0
+
+Multiple-imputation estimates                     Imputations     =         20
+Linear regression                                 Number of obs   =        744
+                                                  Average RVI     =     0.0159
+                                                  Largest FMI     =     0.0830
+                                                  Complete DF     =        737
+DF adjustment:   Small sample                     DF:     min     =     544.25
+                                                          avg     =     698.71
+                                                          max     =     734.85
+Model F test:       Equal FMI                     F(   6,  733.3) =       9.52
+Within VCE type:          OLS                     Prob > F        =     0.0000
+
+------------------------------------------------------------------------------
+ gfr_ckd_epi |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     bwt_std |   .6469781   .9995842     0.65   0.518     -1.31548    2.609436
+     blength |   .2043243   .2280109     0.90   0.370    -.2433367    .6519853
+ gestage_new |  -.4465499   .3576491    -1.25   0.212    -1.149092    .2559918
+     sex_new |  -9.643589      1.576    -6.12   0.000    -12.73759   -6.549585
+     q112age |  -5.218632   1.306337    -3.99   0.000     -7.78323   -2.654034
+ place_birth |  -.1613679   .1112392    -1.45   0.147    -.3797524    .0570167
+       _cons |   253.1755   29.98348     8.44   0.000     194.3099    312.0411
+------------------------------------------------------------------------------
+
+. 
+. restore

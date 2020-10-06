@@ -1,0 +1,86 @@
+
+. *Imputation for MDRD
+. 
+. preserve
+
+. 
+. misstable summarize gestage_new blength if ckd_miss==0
+                                                               Obs<.
+                                                +------------------------------
+               |                                | Unique
+      Variable |     Obs=.     Obs>.     Obs<.  | values        Min         Max
+  -------------+--------------------------------+------------------------------
+   gestage_new |        84                 660  |     94         26    43.85714
+       blength |        23                 721  |     28         28          61
+  -----------------------------------------------------------------------------
+
+. 
+. mi set mlong
+
+. 
+.  mi register imputed  gestage_new blength 
+(198 m=0 obs. now marked as incomplete)
+
+. 
+.  set seed 29390 
+
+.  
+.  mi impute chained (regress) gestage_new (regress) blength = gfr_MDRD sex_new q112age bwt_std  if ckd_miss== 0, add
+> (20) 
+
+Conditional models:
+           blength: regress blength gestage_new gfr_MDRD sex_new q112age bwt_std if ckd_miss== 0
+       gestage_new: regress gestage_new blength gfr_MDRD sex_new q112age bwt_std if ckd_miss== 0
+
+Performing chained iterations ...
+
+Multivariate imputation                     Imputations =       20
+Chained equations                                 added =       20
+Imputed: m=1 through m=20                       updated =        0
+
+Initialization: monotone                     Iterations =      200
+                                                burn-in =       10
+
+       gestage_new: linear regression
+           blength: linear regression
+
+------------------------------------------------------------------
+                   |               Observations per m             
+                   |----------------------------------------------
+          Variable |   Complete   Incomplete   Imputed |     Total
+-------------------+-----------------------------------+----------
+       gestage_new |        660           84        84 |       744
+           blength |        721           23        23 |       744
+------------------------------------------------------------------
+(complete + incomplete = total; imputed is the minimum across m
+ of the number of filled-in observations.)
+
+.  
+.  *Model 1 Regression with Imputation (2 Levels)
+. mi estimate: regress gfr_MDRD bwt_std blength gestage_new sex_new q112age place_birth if ckd_miss== 0
+
+Multiple-imputation estimates                     Imputations     =         20
+Linear regression                                 Number of obs   =        744
+                                                  Average RVI     =     0.0152
+                                                  Largest FMI     =     0.0689
+                                                  Complete DF     =        737
+DF adjustment:   Small sample                     DF:     min     =     586.28
+                                                          avg     =     701.35
+                                                          max     =     734.86
+Model F test:       Equal FMI                     F(   6,  733.4) =       6.04
+Within VCE type:          OLS                     Prob > F        =     0.0000
+
+------------------------------------------------------------------------------
+    gfr_MDRD |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     bwt_std |   1.426907   2.595294     0.55   0.583    -3.668365    6.522179
+     blength |   .5170529   .5958403     0.87   0.386    -.6528536    1.686959
+ gestage_new |   -.891958   .9219557    -0.97   0.334    -2.702696    .9187801
+     sex_new |  -20.15452   4.092423    -4.92   0.000    -28.18877   -12.12028
+     q112age |  -9.753989   3.392755    -2.87   0.004    -16.41464   -3.093341
+ place_birth |  -.5266706   .2888954    -1.82   0.069    -1.093829    .0404881
+       _cons |   363.3376   77.85036     4.67   0.000      210.497    516.1783
+------------------------------------------------------------------------------
+
+. 
+. restore

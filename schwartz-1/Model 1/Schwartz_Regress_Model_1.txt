@@ -1,0 +1,85 @@
+. Imputation for GFR
+. 
+. preserve
+
+. 
+. misstable summarize gestage_new blength if ckd_miss==0
+                                                               Obs.
+                                                +------------------------------
+                                                Unique
+      Variable      Obs=.     Obs.     Obs.   values        Min         Max
+  -------------+--------------------------------+------------------------------
+   gestage_new         84                 660       94         26    43.85714
+       blength         23                 721       28         28          61
+  -----------------------------------------------------------------------------
+
+. 
+. mi set mlong
+
+. 
+.  mi register imputed  gestage_new blength 
+(198 m=0 obs. now marked as incomplete)
+
+. 
+.  set seed 29390 
+
+.  
+.  mi impute chained (regress) gestage_new (regress) blength = gfr_SW sex_new q112age bwt_std  if ckd_miss== 0, add(2
+ 0) 
+
+Conditional models
+           blength regress blength gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+       gestage_new regress gestage_new blength gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+
+Performing chained iterations ...
+
+Multivariate imputation                     Imputations =       20
+Chained equations                                 added =       20
+Imputed m=1 through m=20                       updated =        0
+
+Initialization monotone                     Iterations =      200
+                                                burn-in =       10
+
+       gestage_new linear regression
+           blength linear regression
+
+------------------------------------------------------------------
+                                  Observations per m             
+                   ----------------------------------------------
+          Variable    Complete   Incomplete   Imputed      Total
+-------------------+-----------------------------------+----------
+       gestage_new         660           84        84        744
+           blength         721           23        23        744
+------------------------------------------------------------------
+(complete + incomplete = total; imputed is the minimum across m
+ of the number of filled-in observations.)
+
+.  
+.  Model 1 Multi Level Modeling with Imputation (2 Levels)
+. mi estimate regress gfr_SW bwt_std blength gestage_new sex_new q112age place_birth if ckd_miss== 0
+
+Multiple-imputation estimates                     Imputations     =         20
+Linear regression                                 Number of obs   =        744
+                                                  Average RVI     =     0.0145
+                                                  Largest FMI     =     0.0661
+                                                  Complete DF     =        737
+DF adjustment   Small sample                     DF     min     =     594.59
+                                                          avg     =     703.44
+                                                          max     =     734.83
+Model F test       Equal FMI                     F(   6,  733.5) =      30.96
+Within VCE type          OLS                     Prob  F        =     0.0000
+
+------------------------------------------------------------------------------
+      gfr_SW       Coef.   Std. Err.      t    Pt     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     bwt_std    1.360572   1.369461     0.99   0.321    -1.328055      4.0492
+     blength    .2932648   .3139462     0.93   0.351    -.3231454     .909675
+ gestage_new   -.5744982   .4857048    -1.18   0.237    -1.528404    .3794074
+     sex_new   -28.67546   2.159276   -13.28   0.000    -32.91455   -24.43637
+     q112age   -4.643499   1.790095    -2.59   0.010    -8.157809    -1.12919
+ place_birth   -.2763663   .1524309    -1.81   0.070    -.5756183    .0228858
+       _cons    209.7728   41.06428     5.11   0.000      129.153    290.3926
+------------------------------------------------------------------------------
+
+. 
+. restore

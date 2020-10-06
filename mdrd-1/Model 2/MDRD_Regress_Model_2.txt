@@ -1,0 +1,111 @@
+*Imputation for GFR MDRD
+. 
+. preserve
+
+. 
+. misstable summarize gestage_new blength bmi own_education own_occup_cat2 if ckd_miss==0
+                                                               Obs<.
+                                                +------------------------------
+               |                                | Unique
+      Variable |     Obs=.     Obs>.     Obs<.  | values        Min         Max
+  -------------+--------------------------------+------------------------------
+   gestage_new |        84                 660  |     94         26    43.85714
+       blength |        23                 721  |     28         28          61
+           bmi |         1                 743  |   >500   13.92261    47.03529
+  own_occup_~2 |         8                 736  |      3          1           3
+  -----------------------------------------------------------------------------
+
+. 
+. mi set mlong
+
+. 
+.  mi register imputed  gestage_new blength preterm bmi own_education own_occup_cat2
+(208 m=0 obs. now marked as incomplete)
+
+. 
+.  set seed 293900 
+
+.  
+.  mi impute chained (regress) gestage_new (regress) blength (regress) bmi (ologit) own_education (ologit) own_occup_
+> cat2 = gfr_MDRD sex_new q112age bwt_std  if ckd_miss== 0, add(20) 
+note: variable own_education contains no soft missing (.) values; imputing nothing
+
+Conditional models:
+               bmi: regress bmi i.own_education i.own_occup_cat2 blength gestage_new gfr_MDRD sex_new q112age
+                     bwt_std if ckd_miss== 0
+    own_occup_cat2: ologit own_occup_cat2 i.own_education bmi blength gestage_new gfr_MDRD sex_new q112age bwt_std
+                     if ckd_miss== 0
+           blength: regress blength i.own_education bmi i.own_occup_cat2 gestage_new gfr_MDRD sex_new q112age
+                     bwt_std if ckd_miss== 0
+       gestage_new: regress gestage_new i.own_education bmi i.own_occup_cat2 blength gfr_MDRD sex_new q112age
+                     bwt_std if ckd_miss== 0
+
+Performing chained iterations ...
+
+Multivariate imputation                     Imputations =       20
+Chained equations                                 added =       20
+Imputed: m=1 through m=20                       updated =        0
+
+Initialization: monotone                     Iterations =      200
+                                                burn-in =       10
+
+       gestage_new: linear regression
+           blength: linear regression
+               bmi: linear regression
+     own_education: ordered logistic regression
+    own_occup_cat2: ordered logistic regression
+
+------------------------------------------------------------------
+                   |               Observations per m             
+                   |----------------------------------------------
+          Variable |   Complete   Incomplete   Imputed |     Total
+-------------------+-----------------------------------+----------
+       gestage_new |        660           84        84 |       744
+           blength |        721           23        23 |       744
+               bmi |        743            1         1 |       744
+     own_education |        744            0         0 |       744
+    own_occup_cat2 |        736            8         8 |       744
+------------------------------------------------------------------
+(complete + incomplete = total; imputed is the minimum across m
+ of the number of filled-in observations.)
+
+.  
+. *Model 2 Multi Level Modeling with Imputation (2 Levels)
+. mi estimate: regress gfr_MDRD bwt_std blength gestage_new sex_new q112age bmi i.own_education i.own_occup_cat2 plac
+> e_birth if ckd_miss== 0
+
+Multiple-imputation estimates                     Imputations     =         20
+Linear regression                                 Number of obs   =        744
+                                                  Average RVI     =     0.0131
+                                                  Largest FMI     =     0.0645
+                                                  Complete DF     =        732
+DF adjustment:   Small sample                     DF:     min     =     595.74
+                                                          avg     =     703.68
+                                                          max     =     729.73
+Model F test:       Equal FMI                     F(  11,  729.4) =       3.71
+Within VCE type:          OLS                     Prob > F        =     0.0000
+
+--------------------------------------------------------------------------------
+      gfr_MDRD |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       bwt_std |   1.482872   2.603236     0.57   0.569    -3.627981    6.593726
+       blength |   .3983534    .605342     0.66   0.511    -.7903011    1.587008
+   gestage_new |  -.7022553   .9247658    -0.76   0.448    -2.518453    1.113942
+       sex_new |   -18.9265   4.217091    -4.49   0.000     -27.2056    -10.6474
+       q112age |  -9.697204   3.432999    -2.82   0.005    -16.43694   -2.957464
+           bmi |   .2436255   .4057505     0.60   0.548    -.5529548    1.040206
+               |
+ own_education |
+            2  |   12.24749   6.740795     1.82   0.070    -.9861954    25.48118
+            3  |   10.22025    8.26563     1.24   0.217    -6.007063    26.44757
+               |
+own_occup_cat2 |
+            2  |   5.056754   5.067156     1.00   0.319    -4.891708    15.00522
+            3  |   3.631092      5.422     0.67   0.503    -7.014824    14.27701
+               |
+   place_birth |  -.5421572   .2903755    -1.87   0.062    -1.112228    .0279139
+         _cons |   341.2173    79.7183     4.28   0.000     184.7086    497.7259
+--------------------------------------------------------------------------------
+
+. 
+. restore

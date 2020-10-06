@@ -1,0 +1,139 @@
+. *Imputation for GFR Schwarz 2009
+. 
+. preserve
+
+. 
+. misstable summarize gestage_new blength bmi own_education own_occup_cat2 mn23dbp2 q115chol q116fat fastglu q47smok1
+>   if ckd_miss==0
+                                                               Obs<.
+                                                +------------------------------
+               |                                | Unique
+      Variable |     Obs=.     Obs>.     Obs<.  | values        Min         Max
+  -------------+--------------------------------+------------------------------
+   gestage_new |        84                 660  |     94         26    43.85714
+       blength |        23                 721  |     28         28          61
+           bmi |         1                 743  |   >500   13.92261    47.03529
+  own_occup_~2 |         8                 736  |      3          1           3
+      q115chol |         5                 739  |    120        .42        2.39
+       q116fat |         5                 739  |    117        .15        2.58
+       fastglu |        15                 729  |     31        3.1        11.2
+  -----------------------------------------------------------------------------
+
+. 
+. mi set mlong
+
+. 
+.  mi register imputed  gestage_new blength preterm bmi own_education own_occup_cat2 mn23dbp2 q115chol q116fat fastgl
+> u q47smok1
+(256 m=0 obs. now marked as incomplete)
+
+. 
+.  set seed 293900 
+
+.  
+.  mi impute chained (regress) gestage_new (regress) blength (regress) bmi (ologit) own_education (ologit) own_occup_
+> cat2 (regress) mn23dbp2 (regress) q115chol (regress) q116fat (regress) fastglu (logit) q47smok1 = gfr_SW sex_new q1
+> 12age bwt_std  if ckd_miss== 0, add(20) 
+note: variables own_education mn23dbp2 q47smok1 contain no soft missing (.) values; imputing nothing
+
+Conditional models:
+               bmi: regress bmi i.own_education mn23dbp2 i.q47smok1 q115chol q116fat i.own_occup_cat2 fastglu
+                     blength gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+          q115chol: regress q115chol i.own_education mn23dbp2 i.q47smok1 bmi q116fat i.own_occup_cat2 fastglu
+                     blength gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+           q116fat: regress q116fat i.own_education mn23dbp2 i.q47smok1 bmi q115chol i.own_occup_cat2 fastglu
+                     blength gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+    own_occup_cat2: ologit own_occup_cat2 i.own_education mn23dbp2 i.q47smok1 bmi q115chol q116fat fastglu blength
+                     gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+           fastglu: regress fastglu i.own_education mn23dbp2 i.q47smok1 bmi q115chol q116fat i.own_occup_cat2
+                     blength gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+           blength: regress blength i.own_education mn23dbp2 i.q47smok1 bmi q115chol q116fat i.own_occup_cat2
+                     fastglu gestage_new gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+       gestage_new: regress gestage_new i.own_education mn23dbp2 i.q47smok1 bmi q115chol q116fat i.own_occup_cat2
+                     fastglu blength gfr_SW sex_new q112age bwt_std if ckd_miss== 0
+
+Performing chained iterations ...
+
+Multivariate imputation                     Imputations =       20
+Chained equations                                 added =       20
+Imputed: m=1 through m=20                       updated =        0
+
+Initialization: monotone                     Iterations =      200
+                                                burn-in =       10
+
+       gestage_new: linear regression
+           blength: linear regression
+               bmi: linear regression
+     own_education: ordered logistic regression
+    own_occup_cat2: ordered logistic regression
+          mn23dbp2: linear regression
+          q115chol: linear regression
+           q116fat: linear regression
+           fastglu: linear regression
+          q47smok1: logistic regression
+
+------------------------------------------------------------------
+                   |               Observations per m             
+                   |----------------------------------------------
+          Variable |   Complete   Incomplete   Imputed |     Total
+-------------------+-----------------------------------+----------
+       gestage_new |        660           84        84 |       744
+           blength |        721           23        23 |       744
+               bmi |        743            1         1 |       744
+     own_education |        744            0         0 |       744
+    own_occup_cat2 |        736            8         8 |       744
+          mn23dbp2 |        744            0         0 |       744
+          q115chol |        739            5         5 |       744
+           q116fat |        739            5         5 |       744
+           fastglu |        729           15        15 |       744
+          q47smok1 |        744            0         0 |       744
+------------------------------------------------------------------
+(complete + incomplete = total; imputed is the minimum across m
+ of the number of filled-in observations.)
+
+.  
+. *Model 5 Regression with Imputation (2 Levels)
+. mi estimate: regress gfr_SW bwt_std blength gestage_new sex_new q112age bmi i.own_education i.own_occup_cat2 mn23db
+> p2 q115chol q116fat fastglu i.q47smok1  place_birth if ckd_miss== 0
+
+Multiple-imputation estimates                     Imputations     =         20
+Linear regression                                 Number of obs   =        744
+                                                  Average RVI     =     0.0173
+                                                  Largest FMI     =     0.1293
+                                                  Complete DF     =        727
+DF adjustment:   Small sample                     DF:     min     =     410.59
+                                                          avg     =     685.88
+                                                          max     =     724.66
+Model F test:       Equal FMI                     F(  16,  724.4) =      19.57
+Within VCE type:          OLS                     Prob > F        =     0.0000
+
+--------------------------------------------------------------------------------
+        gfr_SW |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       bwt_std |   2.092651   1.317009     1.59   0.113    -.4934377    4.678739
+       blength |   .1201999   .3062041     0.39   0.695    -.4811945    .7215944
+   gestage_new |  -.8437051   .4737348    -1.78   0.076    -1.774953     .087543
+       sex_new |  -30.85577    2.24175   -13.76   0.000    -35.25691   -26.45464
+       q112age |  -3.882657   1.759264    -2.21   0.028    -7.336529   -.4287849
+           bmi |  -.2670062   .2078163    -1.28   0.199    -.6750012    .1409888
+               |
+ own_education |
+            2  |   5.290498   3.390636     1.56   0.119    -1.366167    11.94716
+            3  |   2.931394   4.141627     0.71   0.479    -5.199701    11.06249
+               |
+own_occup_cat2 |
+            2  |   1.163518   2.527695     0.46   0.645    -3.799262    6.126299
+            3  |   1.582766   2.688022     0.59   0.556    -3.694876    6.860409
+               |
+      mn23dbp2 |  -.1816915   .1084602    -1.68   0.094    -.3946252    .0312422
+      q115chol |   -7.35037   3.770275    -1.95   0.052    -14.75237    .0516331
+       q116fat |   35.91515   3.943599     9.11   0.000     28.17285    43.65746
+       fastglu |   1.177982   2.126899     0.55   0.580     -2.99769    5.353655
+    1.q47smok1 |  -.8963235   2.197513    -0.41   0.683     -5.21059    3.417944
+   place_birth |  -.3100456   .1443123    -2.15   0.032     -.593366   -.0267251
+         _cons |   211.6281   41.01465     5.16   0.000      131.096    292.1602
+--------------------------------------------------------------------------------
+
+. 
+. restore
+
