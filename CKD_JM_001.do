@@ -183,7 +183,7 @@ gen ln_MDRD = ln(gfr_MDRD)
 label var ln_MDRD "Log eGFR MDRD"
 
 gen ln_SW_1976 = ln(gfr_SW_1976)
-label var ln_SW_1976 "Log Swartz 1976"
+label var ln_SW_1976 "Log Schwartz 1976"
 
 gen ln_CG = ln(gfr_CG)
 label var ln_CG "Log eGFR Cockcroft-Gault"
@@ -192,10 +192,10 @@ gen ln_ckd_epi = ln(gfr_ckd_epi)
 label var ln_ckd_epi "Log eGFR CKD EPI"
 
 gen ln_SW = ln(gfr_SW)
-label var ln_SW "Log eGFR Swartz 2009"
+label var ln_SW "Log eGFR Schwartz 2009"
 
 gen ln_lyon = ln(gfr_lyon)
-label var ln_lyon "Log eGFR Swartz-Lyon"
+label var ln_lyon "Log eGFR Schwartz-Lyon"
 
 *-------------------------------------------------------------------------------
 *Summary statistics
@@ -232,11 +232,11 @@ signrank ln_lyon = ln_SW
 *-------------------------------------------------------------------------------
 *Percent Agreement Plots with Trend
 
-*1) MDRD vs Swartz-Lyon
+*1) MDRD vs Schwartz-Lyon
 #delimit ;
 batplot gfr_MDRD gfr_lyon, 
 								name(MDRD_lyon_trend)  
-								ytitle("MDRD - Swartz-Lyon") xtitle("Mean of MDRD & Swartz-Lyon")
+								ytitle("MDRD - Schwartz-Lyon") xtitle("Mean of MDRD & Schwartz-Lyon")
 								ylab(, nogrid)
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -247,11 +247,11 @@ batplot gfr_MDRD gfr_lyon,
 
 *-------------------------------------------------------------------------------
 
-*2) CG vs Swartz-Lyon
+*2) CG vs Schwartz-Lyon
 #delimit ;
 batplot gfr_CG gfr_lyon, 
 								name(CG_lyon_trend)  
-								ytitle("CG - Swartz-Lyon") xtitle("Mean of CG & Swartz-Lyon")
+								ytitle("CG - Schwartz-Lyon") xtitle("Mean of CG & Schwartz-Lyon")
 								ylab(, nogrid)
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -262,11 +262,11 @@ batplot gfr_CG gfr_lyon,
 
 *-------------------------------------------------------------------------------
 
-*3) CKD-EPI vs Swartz-Lyon
+*3) CKD-EPI vs Schwartz-Lyon
 #delimit ;
 batplot gfr_ckd_epi gfr_lyon, 
 								name(CKD_EPI_lyon_trend)  
-								ytitle("CKD-EPI - Swartz-Lyon") xtitle("Mean of CKD-EPI & Swartz-Lyon")
+								ytitle("CKD-EPI - Schwartz-Lyon") xtitle("Mean of CKD-EPI & Schwartz-Lyon")
 								ylab(, nogrid)
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -277,11 +277,11 @@ batplot gfr_ckd_epi gfr_lyon,
 
 *-------------------------------------------------------------------------------
 
-*4) Swartz 1976 vs Swartz-Lyon
+*4) Schwartz 1976 vs Schwartz-Lyon
 #delimit ;
 batplot gfr_SW_1976 gfr_lyon, 
 								name(SW_1976_lyon_trend)  
-								ytitle("Swartz 1976 - Swartz-Lyon") xtitle("Mean of Swartz 1976 & Swartz-Lyon")
+								ytitle("Schwartz 1976 - Schwartz-Lyon") xtitle("Mean of Schwartz 1976 & Schwartz-Lyon")
 								ylab(, nogrid)
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -292,11 +292,11 @@ batplot gfr_SW_1976 gfr_lyon,
 
 *-------------------------------------------------------------------------------
 
-*4) Swartz 2009 vs Swartz-Lyon
+*4) Schwartz 2009 vs Schwartz-Lyon
 #delimit ;
 batplot gfr_SW gfr_lyon, 
 								name(SW_2009_lyon_trend)  
-								ytitle("Swartz 2009 - Swartz-Lyon") xtitle("Mean of Swartz 2009 & Swartz-Lyon")
+								ytitle("Schwartz 2009 - Schwartz-Lyon") xtitle("Mean of Schwartz 2009 & Schwartz-Lyon")
 								ylab(, nogrid)
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -322,7 +322,7 @@ graph combine
 				color(black) size(small)) 
 				caption("MDRD - Modified Renal Diet; CG - Cockcroft-Gault"
 						"CKD-EPI - Chronic Kidney Disease Epidemiology Collaboration"
-						"SW - Swartz" 
+						"SW - Schwartz" 
 						, position(5) 
 				size(vsmall) color(black) ring(3.5) span)
 				plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin))
@@ -336,11 +336,11 @@ graph combine
 *-------------------------------------------------------------------------------
 *Percent Agreement Plots with No Trend
 
-*1) MDRD vs Swartz-Lyon
+*1) MDRD vs Schwartz-Lyon
 #delimit ;
 batplot gfr_MDRD gfr_lyon, notrend
 								name(MDRD_lyon_no_trend)  
-								ytitle("MDRD - Swartz-Lyon") xtitle("Mean of MDRD & Swartz-Lyon")
+								ytitle("MDRD - Schwartz-Lyon") xtitle("Mean of MDRD & Schwartz-Lyon")
 								ylab(, nogrid)
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -351,11 +351,11 @@ batplot gfr_MDRD gfr_lyon, notrend
 
 *-------------------------------------------------------------------------------
 
-*2) CG vs Swartz-Lyon
+*2) CG vs Schwartz-Lyon
 #delimit ;
 batplot gfr_CG gfr_lyon, notrend
 								name(CG_lyon_no_trend)  
-								ytitle("CG - Swartz-Lyon") xtitle("Mean of CG & Swartz-Lyon")
+								ytitle("CG - Schwartz-Lyon") xtitle("Mean of CG & Schwartz-Lyon")
 								ylab(, nogrid)
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -366,11 +366,11 @@ batplot gfr_CG gfr_lyon, notrend
 
 *-------------------------------------------------------------------------------
 
-*3) CKD-EPI vs Swartz-Lyon
+*3) CKD-EPI vs Schwartz-Lyon
 #delimit ;
 batplot gfr_ckd_epi gfr_lyon, notrend
 								name(CKD_EPI_lyon_no_trend)  
-								ytitle("CKD-EPI - Swartz-Lyon") xtitle("Mean of CKD-EPI & Swartz-Lyon")
+								ytitle("CKD-EPI - Schwartz-Lyon") xtitle("Mean of CKD-EPI & Schwartz-Lyon")
 								ylab(, nogrid)
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -381,11 +381,11 @@ batplot gfr_ckd_epi gfr_lyon, notrend
 
 *-------------------------------------------------------------------------------
 
-*4) Swartz 1976 vs Swartz-Lyon
+*4) Schwartz 1976 vs Schwartz-Lyon
 #delimit ;
 batplot gfr_SW_1976 gfr_lyon, notrend
 								name(SW_1976_lyon_no_trend)  
-								ytitle("Swartz 1976 - Swartz-Lyon") xtitle("Mean of Swartz 1976 & Swartz-Lyon")
+								ytitle("Schwartz 1976 - Schwartz-Lyon") xtitle("Mean of Schwartz 1976 & Schwartz-Lyon")
 								ylab(, nogrid)
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -396,11 +396,11 @@ batplot gfr_SW_1976 gfr_lyon, notrend
 
 *-------------------------------------------------------------------------------
 
-*4) Swartz 2009 vs Swartz-Lyon
+*4) Schwartz 2009 vs Schwartz-Lyon
 #delimit ;
 batplot gfr_SW gfr_lyon, notrend
 								name(SW_2009_lyon_no_trend)  
-								ytitle("Swartz 2009 - Swartz-Lyon") xtitle("Mean of Swartz 2009 & Swartz-Lyon")
+								ytitle("Schwartz 2009 - Schwartz-Lyon") xtitle("Mean of Schwartz 2009 & Schwartz-Lyon")
 								ylab(, nogrid)
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -426,7 +426,7 @@ graph combine
 				color(black) size(small)) 
 				caption("MDRD - Modified Renal Diet; CG - Cockcroft-Gault"
 						"CKD-EPI - Chronic Kidney Disease Epidemiology Collaboration"
-						"SW - Swartz" 
+						"SW - Schwartz" 
 						, position(5) 
 				size(vsmall) color(black) ring(3.5) span)
 				plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin))
@@ -438,6 +438,71 @@ graph combine
 #delimit cr
 *-------------------------------------------------------------------------------
 
+*Create Reduced eGFR variable using each equation using the National Kidney Foundation Guidelines
+
+*Analysis note: Only Schwartz-2009 and Schwartz-Lyon had estimates of <60 (approx 2%) thus reduced eGFR changed to <90
+
+*MDRD
+gen reduce_eGFR_MDRD = .
+replace reduce_eGFR_MDRD = 1 if gfr_MDRD <90
+replace reduce_eGFR_MDRD = 0 if gfr_MDRD >=90
+label var reduce_eGFR_MDRD "Reduced eGFR using MDRD Equation"
+label define reduce_eGFR_MDRD 0"Normal" 1"<90 eGFR"
+label value reduce_eGFR_MDRD reduce_eGFR_MDRD
+
+*CG
+gen reduce_eGFR_CG = .
+replace reduce_eGFR_CG = 1 if gfr_CG <90
+replace reduce_eGFR_CG = 0 if gfr_CG >=90
+label var reduce_eGFR_CG "Reduced eGFR using CG Equation"
+label define reduce_eGFR_CG 0"Normal" 1"<90 eGFR"
+label value reduce_eGFR_CG reduce_eGFR_CG
+
+*CKD-EPI
+gen reduce_eGFR_CKD_EPI = .
+replace reduce_eGFR_CKD_EPI = 1 if gfr_ckd_epi <90
+replace reduce_eGFR_CKD_EPI = 0 if gfr_ckd_epi >=90
+label var reduce_eGFR_CKD_EPI "Reduced eGFR using CKD-EPI Equation"
+label define reduce_eGFR_CKD_EPI 0"Normal" 1"<90 eGFR"
+label value reduce_eGFR_CKD_EPI reduce_eGFR_CKD_EPI
+
+*Schwartz-1976
+gen reduce_eGFR_SW_1976 = .
+replace reduce_eGFR_SW_1976 = 1 if gfr_SW_1976 <90
+replace reduce_eGFR_SW_1976 = 0 if gfr_SW_1976 >=90
+label var reduce_eGFR_SW_1976 "Reduced eGFR using Schwartz-1976 Equation"
+label define reduce_eGFR_SW_1976 0"Normal" 1"<90 eGFR"
+label value reduce_eGFR_SW_1976 reduce_eGFR_SW_1976
+
+*Schwartz-2009
+gen reduce_eGFR_SW_2009 = .
+replace reduce_eGFR_SW_2009 = 1 if gfr_SW <90
+replace reduce_eGFR_SW_2009 = 0 if gfr_SW >=90
+label var reduce_eGFR_SW_2009 "Reduced eGFR using Schwartz-2009 Equation"
+label define reduce_eGFR_SW_2009 0"Normal" 1"<90 eGFR"
+label value reduce_eGFR_SW_2009 reduce_eGFR_SW_2009
+
+*Schwartz-Lyon
+gen reduce_eGFR_SW_lyon = .
+replace reduce_eGFR_SW_lyon = 1 if gfr_lyon <90
+replace reduce_eGFR_SW_lyon = 0 if gfr_lyon >=90
+label var reduce_eGFR_SW_lyon "Reduced eGFR using Schwartz-Lyon Equation"
+label define reduce_eGFR_SW_lyon 0"Normal" 1"<90 eGFR"
+label value reduce_eGFR_SW_lyon reduce_eGFR_SW_lyon
+
+proportion reduce_eGFR_MDRD reduce_eGFR_CG reduce_eGFR_CKD_EPI ///
+		   reduce_eGFR_SW_1976 reduce_eGFR_SW_2009 reduce_eGFR_SW_lyon
+
+*-------------------------------------------------------------------------------
+*Create mean ratios for Schwartz 2009 and Schwartz-Lyon Equations
+
+gen schwartz_ratio = (gfr_SW / gfr_lyon)
+label var schwartz_ratio "Mean Schwartz Ratio"
+
+mean schwartz_ratio
+
+*-------------------------------------------------------------------------------
+		   
 *Close log file 
 log close
 
