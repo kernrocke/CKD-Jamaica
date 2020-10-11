@@ -26,30 +26,30 @@ set linesize 150
 ** Dataset to encrypted location
 
 *WINDOWS OS
-*local datapath "X:/OneDrive - The UWI - Cave Hill Campus"
+local datapath "X:/OneDrive - The UWI - Cave Hill Campus"
 
 *MAC OS
-local datapath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
+*local datapath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
 
 *-------------------------------------------------------------------------------
 
 ** Logfiles to unencrypted location
 
 *WINDOWS
-*local logpath "X:/OneDrive - The UWI - Cave Hill Campus"
+local logpath "X:/OneDrive - The UWI - Cave Hill Campus"
 
 *MAC OS
-local logpath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
+*local logpath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
 
 *-------------------------------------------------------------------------------
 
 **Aggregated output path
 
 *WINDOWS
-*local outputpath "X:/OneDrive - The UWI - Cave Hill Campus"
+local outputpath "X:/OneDrive - The UWI - Cave Hill Campus"
 
 *MAC OS
-local outputpath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
+*local outputpath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
 
 *-------------------------------------------------------------------------------
 
@@ -241,7 +241,6 @@ batplot gfr_MDRD gfr_lyon,
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-								note("MDRD - Modified Renal Diet")
 								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/MDRD_Lyon_trend", replace)
     ;
 #delimit cr	
@@ -257,7 +256,6 @@ batplot gfr_CG gfr_lyon,
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-								note("CG - Cockcroft-Gault")
 								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/CG_Lyon_trend", replace)
     ;
 #delimit cr	
@@ -273,7 +271,6 @@ batplot gfr_ckd_epi gfr_lyon,
 								moptions(mlabp(5)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
-								note("CKD-EPI - Chronic Kidney Disease Epidemiology Collaboration")
 								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/CKD_EPI_Lyon_trend", replace)
     ;
 #delimit cr	
@@ -312,7 +309,6 @@ batplot gfr_SW gfr_lyon,
 *Combine Graphs
 
 #delimit ;
-
 graph combine 
 				"`outputpath'/Manuscripts/Renal Function/Data/3-output/MDRD_Lyon_trend"
 				"`outputpath'/Manuscripts/Renal Function/Data/3-output/CG_Lyon_trend"
@@ -321,21 +317,127 @@ graph combine
 				"`outputpath'/Manuscripts/Renal Function/Data/3-output/SW_2009_Lyon_trend"
 				
 				,
-				title("Limits of Agreement for eGFR Equations (MDRD, CG, CKD-EPI, SW-1976, SW-2009 vs SW-Lyon"),
-				color(black) size(medium)
-				)
+				name(Trend_eGR_combine)
+				title(Limits of Agreement for eGFR Equations (MDRD, CG, CKD-EPI, SW-1976, SW-2009) vs SW-Lyon, 
+				color(black) size(small)) 
 				caption("MDRD - Modified Renal Diet; CG - Cockcroft-Gault"
 						"CKD-EPI - Chronic Kidney Disease Epidemiology Collaboration"
-						"SW - Swartz")
-				, position(5) 
+						"SW - Swartz" 
+						, position(5) 
 				size(vsmall) color(black) ring(3.5) span)
-				plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+				plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin))
 				graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
 				col(3)
+				saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/combine_trend", replace)
 				
     ;
 #delimit cr
 *-------------------------------------------------------------------------------
+*-------------------------------------------------------------------------------
+*Percent Agreement Plots with No Trend
+
+*1) MDRD vs Swartz-Lyon
+#delimit ;
+batplot gfr_MDRD gfr_lyon, notrend
+								name(MDRD_lyon_no_trend)  
+								ytitle("MDRD - Swartz-Lyon") xtitle("Mean of MDRD & Swartz-Lyon")
+								ylab(, nogrid)
+								moptions(mlabp(5)) sc(jitter(6))
+								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/MDRD_Lyon_no_trend", replace)
+    ;
+#delimit cr	
+
+*-------------------------------------------------------------------------------
+
+*2) CG vs Swartz-Lyon
+#delimit ;
+batplot gfr_CG gfr_lyon, notrend
+								name(CG_lyon_no_trend)  
+								ytitle("CG - Swartz-Lyon") xtitle("Mean of CG & Swartz-Lyon")
+								ylab(, nogrid)
+								moptions(mlabp(5)) sc(jitter(6))
+								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/CG_Lyon_no_trend", replace)
+    ;
+#delimit cr	
+
+*-------------------------------------------------------------------------------
+
+*3) CKD-EPI vs Swartz-Lyon
+#delimit ;
+batplot gfr_ckd_epi gfr_lyon, notrend
+								name(CKD_EPI_lyon_no_trend)  
+								ytitle("CKD-EPI - Swartz-Lyon") xtitle("Mean of CKD-EPI & Swartz-Lyon")
+								ylab(, nogrid)
+								moptions(mlabp(5)) sc(jitter(6))
+								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/CKD_EPI_Lyon_no_trend", replace)
+    ;
+#delimit cr	
+
+*-------------------------------------------------------------------------------
+
+*4) Swartz 1976 vs Swartz-Lyon
+#delimit ;
+batplot gfr_SW_1976 gfr_lyon, notrend
+								name(SW_1976_lyon_no_trend)  
+								ytitle("Swartz 1976 - Swartz-Lyon") xtitle("Mean of Swartz 1976 & Swartz-Lyon")
+								ylab(, nogrid)
+								moptions(mlabp(5)) sc(jitter(6))
+								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/SW_1976_Lyon_no_trend", replace)
+    ;
+#delimit cr	
+
+*-------------------------------------------------------------------------------
+
+*4) Swartz 2009 vs Swartz-Lyon
+#delimit ;
+batplot gfr_SW gfr_lyon, notrend
+								name(SW_2009_lyon_no_trend)  
+								ytitle("Swartz 2009 - Swartz-Lyon") xtitle("Mean of Swartz 2009 & Swartz-Lyon")
+								ylab(, nogrid)
+								moptions(mlabp(5)) sc(jitter(6))
+								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/SW_2009_Lyon_no_trend", replace)
+    ;
+#delimit cr	
+
+*-------------------------------------------------------------------------------
+*Combine Graphs
+
+#delimit ;
+graph combine 
+				"`outputpath'/Manuscripts/Renal Function/Data/3-output/MDRD_Lyon_no_trend"
+				"`outputpath'/Manuscripts/Renal Function/Data/3-output/CG_Lyon_no_trend"
+				"`outputpath'/Manuscripts/Renal Function/Data/3-output/CKD_EPI_Lyon_no_trend"
+				"`outputpath'/Manuscripts/Renal Function/Data/3-output/SW_1976_Lyon_no_trend"
+				"`outputpath'/Manuscripts/Renal Function/Data/3-output/SW_2009_Lyon_no_trend"
+				
+				,
+				name(No_Trend_eGFR)
+				title(Limits of Agreement for eGFR Equations (MDRD, CG, CKD-EPI, SW-1976, SW-2009) vs SW-Lyon, 
+				color(black) size(small)) 
+				caption("MDRD - Modified Renal Diet; CG - Cockcroft-Gault"
+						"CKD-EPI - Chronic Kidney Disease Epidemiology Collaboration"
+						"SW - Swartz" 
+						, position(5) 
+				size(vsmall) color(black) ring(3.5) span)
+				plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin))
+				graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+				col(3)
+				saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/combine_no_trend", replace)
+				
+    ;
+#delimit cr
+*-------------------------------------------------------------------------------
+
 *Close log file 
 log close
 
