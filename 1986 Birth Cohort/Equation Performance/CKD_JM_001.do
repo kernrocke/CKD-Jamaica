@@ -9,7 +9,7 @@ cls
 **	Sub-Project:	Comparison of eGFR equations
 **  Analyst:		Kern Rocke
 **	Date Created:	06/10/2020
-**	Date Modified: 	08/10/2020
+**	Date Modified: 	17/12/2020
 **  Algorithm Task: Compare eGFR equations among young adults (1986 Birth Cohort)
 
 
@@ -342,7 +342,8 @@ batplot gfr_MDRD gfr_lyon, notrend
 								name(MDRD_lyon_no_trend)  
 								ytitle("MDRD - Schwartz-Lyon") xtitle("Mean of MDRD & Schwartz-Lyon")
 								ylab(, nogrid)
-								moptions(mlabp(5)) sc(jitter(6))
+								title("4.12% outside the LOA", c(black) size(medium))
+								moptions(mlabp(5) mfc(green*0.65) mlcolor(black)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/MDRD_Lyon_no_trend", replace)
@@ -350,14 +351,14 @@ batplot gfr_MDRD gfr_lyon, notrend
 #delimit cr	
 
 *-------------------------------------------------------------------------------
-
 *2) CG vs Schwartz-Lyon
 #delimit ;
 batplot gfr_CG gfr_lyon, notrend
 								name(CG_lyon_no_trend)  
 								ytitle("CG - Schwartz-Lyon") xtitle("Mean of CG & Schwartz-Lyon")
 								ylab(, nogrid)
-								moptions(mlabp(5)) sc(jitter(6))
+								title("4.59% outside the LOA", c(black) size(medium))
+								moptions(mlabp(5) mfc(green*0.65) mlcolor(black)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/CG_Lyon_no_trend", replace)
@@ -372,7 +373,8 @@ batplot gfr_ckd_epi gfr_lyon, notrend
 								name(CKD_EPI_lyon_no_trend)  
 								ytitle("CKD-EPI - Schwartz-Lyon") xtitle("Mean of CKD-EPI & Schwartz-Lyon")
 								ylab(, nogrid)
-								moptions(mlabp(5)) sc(jitter(6))
+								title("3.65% outside the LOA", c(black) size(medium))
+								moptions(mlabp(5) mfc(green*0.65) mlcolor(black)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/CKD_EPI_Lyon_no_trend", replace)
@@ -387,7 +389,8 @@ batplot gfr_SW_1976 gfr_lyon, notrend
 								name(SW_1976_lyon_no_trend)  
 								ytitle("Schwartz 1976 - Schwartz-Lyon") xtitle("Mean of Schwartz 1976 & Schwartz-Lyon")
 								ylab(, nogrid)
-								moptions(mlabp(5)) sc(jitter(6))
+								title("3.88% outside the LOA", c(black) size(medium))
+								moptions(mlabp(5) mfc(green*0.65) mlcolor(black)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/SW_1976_Lyon_no_trend", replace)
@@ -402,7 +405,8 @@ batplot gfr_SW gfr_lyon, notrend
 								name(SW_2009_lyon_no_trend)  
 								ytitle("Schwartz 2009 - Schwartz-Lyon") xtitle("Mean of Schwartz 2009 & Schwartz-Lyon")
 								ylab(, nogrid)
-								moptions(mlabp(5)) sc(jitter(6))
+								title("1.88% outside the LOA", c(black) size(medium))
+								moptions(mlabp(5) mfc(green*0.65) mlcolor(black)) sc(jitter(6))
 								plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
 								saving("`outputpath'/Manuscripts/Renal Function/Data/3-output/SW_2009_Lyon_no_trend", replace)
