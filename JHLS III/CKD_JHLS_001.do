@@ -11,7 +11,7 @@ cls
 **	Sub-Project:	CKD in Jamaica (Lori FIsher HREP paper)
 **  Analyst:		Kern Rocke
 **	Date Created:	14/12/2020
-**	Date Modified: 	14/12/2020
+**	Date Modified: 	16/12/2020
 **  Algorithm Task: Dealing with missing variables
 
 
@@ -145,7 +145,7 @@ label var possess_cat3 "Possession Tertiles"
 label define possess_cat3 0 "<= 6 items" 1 "7 - 9 items"  2 "10-20 items" 
 lab val possess_cat3 possess_cat3
 
-tab possess_cat3
+tab possess_cat3 , miss
 
 *-------------------------------------------------------------------------------
 
@@ -164,7 +164,24 @@ label define education 1"Less than high school" ///
 					   3"Post high school"
 label value education education
 
-tab education
+tab education , miss
+
+*-------------------------------------------------------------------------------
+
+**Smoking Status
+
+*Use Never smoker; Past Smoker; Current Smoker
+
+gen smoking_status = .
+replace smoking_status = 0 if n1012smokeanytobaccocigaret == 0
+replace smoking_status = 1 if n1012smokeanytobaccocigaret == 1 
+replace smoking_status = 2 if n1012smokeanytobaccocigaret == 2 | n1012smokeanytobaccocigaret == 3 
+
+label var smoking_status "Smoking Status"
+label define smoking_status 0"Never" 1"Past Smoker" 2"Current Smoker"
+label value smoking_status smoking_status
+
+tab smoking_status , miss
 
 *-------------------------------------------------------------------------------
 
@@ -176,13 +193,33 @@ gen dbp_mean = (dbp_new1 + dbp_new2+ dbp_new3) /3
 gen htn = . 
 replace htn = 1 if sbp_mean>=140 & dbp_mean>=90
 replace htn = 0 if sbp_mean<140 | dbp_mean <90
+replace htn = 1 if N31dhighbloodpressure == 1
 replace htn = . if sbp_mean == . | dbp_mean == .
 
 label var htn "Hypertension"
 label define htn 0"Normal" 1"Hypertensive"
 label value htn htn
 
-tab htn
+tab htn , miss
+
+*-------------------------------------------------------------------------------
+
+*Diabetes
+
+gen diabetes = .
+replace diabetes = 0 if f35fastingglucoselevel_new ==. & f39glycohbresult_new ==. & N31bdiabetesmellitus == 0
+replace diabetes = 0 if f35fastingglucoselevel_new <7 | f39glycohbresult_new <6.5 & N31bdiabetesmellitus == 0
+
+replace diabetes = 1 if f39glycohbresult_new >= 6.5 & f39glycohbresult_new != .
+replace diabetes = 1 if N31bdiabetesmellitus == 1 
+replace diabetes = 1 if f35fastingglucoselevel_new >=7 & f35fastingglucoselevel_new !=.
+
+label var diabetes "Diabetes"
+label define diabetes 0"Normal" 1"Diabetes"
+label value diabetes diabetes diabetes
+
+tab diabetes , miss
+
 *-------------------------------------------------------------------------------
 
 *Create variable for non-missing and missing on the main outcome of interest (eGFR)
@@ -244,7 +281,10 @@ n1012smokeanytobaccocigaret
 
 *Distribution of missing data for key variables
 misstable summarize bmi_new f36totalcholesterollevels_new education possess_cat3 ///
-					Microalbuminmg_yn_20 htn if egfr!=.
+					Microalbuminmg_yn_20 htn smoking_status diabetes ///
+					f35fastingglucoselevel_new f39glycohbresult_new ///
+					N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
+					mn23dbp_new N31dhighbloodpressure if egfr!=.
 					
 *Prepare dataset for imputation
 mi set flong
@@ -255,7 +295,10 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 
 *Register dataset for imputation
  mi register imputed  bmi_new f36totalcholesterollevels_new education possess_cat3 ///
-					  Microalbuminmg_yn_20 htn 
+					  Microalbuminmg_yn_20 htn smoking_status diabetes ///
+					  f35fastingglucoselevel_new f39glycohbresult_new ///
+					  N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
+					  mn23dbp_new N31dhighbloodpressure
 					  
 *Setting seed for reproducability of results
  set seed 1234 
@@ -263,7 +306,11 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 *Imputation using complex chained equations
  mi impute  chained (regress) bmi_new (regress) f36totalcholesterollevels_new ///
 					(ologit) education (ologit) possess_cat3  ///
-					(logit) Microalbuminmg_yn_20 (logit) htn  ///
+					(logit) Microalbuminmg_yn_20 (logit) htn (ologit) smoking_status ///
+				    (regress) f35fastingglucoselevel_new ///
+					(regress) f39glycohbresult_new (ologit) N31bdiabetesmellitus ///
+					(regress) ht_m_new (regress) weight (regress) mn23sbp_new ///
+					(regress) mn23dbp_new (ologit) N31dhighbloodpressure ///
 					= egfr N12observedsex01 age_last_bd if egfr!=. , ///
 					add(1) augment ///
 					savetrace("`datapath'/Data/ckd_impute_1", replace) ///
@@ -279,7 +326,10 @@ drop mi_*
 
 *Distribution of missing data for key variables
 misstable summarize bmi_new f36totalcholesterollevels_new education possess_cat3 ///
-					Microalbuminmg_new htn if egfr!=.
+					Microalbuminmg_yn_20 htn smoking_status diabetes ///
+					f35fastingglucoselevel_new f39glycohbresult_new ///
+					N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
+					mn23dbp_new N31dhighbloodpressure if egfr!=.
 					
 *Prepare dataset for imputation
 mi set flong
@@ -287,13 +337,13 @@ mi set flong
 *Set complex survey dataset for imputation
 mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) singleunit(certainty)
 
-*Set complex survey dataset for imputation
-*mi svyset ed_new_rev [pweight= sampwt_1_adj], strata(postrata) vce(linearized) singleunit(missing)
-
 
 *Register dataset for imputation
  mi register imputed  bmi_new f36totalcholesterollevels_new education possess_cat3 ///
-					  Microalbuminmg_new htn 
+					  Microalbuminmg_yn_20 htn smoking_status diabetes ///
+					  f35fastingglucoselevel_new f39glycohbresult_new ///
+					  N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
+					  mn23dbp_new N31dhighbloodpressure
 					  
 *Setting seed for reproducability of results
  set seed 1234 
@@ -301,7 +351,11 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 *Imputation using complex chained equations
  mi impute  chained (regress) bmi_new (regress) f36totalcholesterollevels_new ///
 					(ologit) education (ologit) possess_cat3  ///
-					(ologit) Microalbuminmg_new (logit) htn  ///
+					(logit) Microalbuminmg_yn_20 (logit) htn (ologit) smoking_status ///
+				    (regress) f35fastingglucoselevel_new ///
+					(regress) f39glycohbresult_new (ologit) N31bdiabetesmellitus ///
+					(regress) ht_m_new (regress) weight (regress) mn23sbp_new ///
+					(regress) mn23dbp_new (ologit) N31dhighbloodpressure ///
 					= egfr N12observedsex01 age_last_bd if egfr!=. ,  ///
 					add(43) augment ///
 					savetrace("`datapath'/Data/ckd_impute_43", replace) ///
@@ -330,6 +384,8 @@ label var ckd "Chronic Kidney Disease"
 label define ckd 0"Normal" 1"CKD"
 label value ckd ckd
 
+*-------------------------------------------------------------------------------
+
 *Age categories
 drop age_cat
 mi passive: gen age_cat = . 
@@ -345,6 +401,57 @@ label var age_cat "Age Categories"
 label define age_cat 1"15-24" 2"25-34" 3"35-44" 4"45-54" 5"55-64" 6"65-74" 7">/=75"
 label value age_cat age_cat	
 
+*-------------------------------------------------------------------------------
+
+*Hypertension
+
+drop htn
+mi passive: gen htn = . 
+mi passive: replace htn = 1 if mn23sbp_new>=140 & mn23dbp_new>=90
+mi passive: replace htn = 0 if mn23sbp_new<140 | mn23dbp_new <90
+mi passive: replace htn = 1 if N31dhighbloodpressure == 1
+mi passive: replace htn = . if mn23sbp_new == . | mn23dbp_new == .
+label var htn "Hypertension"
+label define htn 0"Normal" 1"Hypertensive"
+label value htn htn
+
+*-------------------------------------------------------------------------------
+
+*Diabetes
+
+drop diabetes
+mi passive: gen diabetes = .
+mi passive: replace diabetes = 0 if f35fastingglucoselevel_new ==. & f39glycohbresult_new ==. & N31bdiabetesmellitus == 0
+mi passive: replace diabetes = 0 if f35fastingglucoselevel_new <7 | f39glycohbresult_new <6.5 & N31bdiabetesmellitus == 0
+mi passive: replace diabetes = 1 if f39glycohbresult_new >= 6.5 & f39glycohbresult_new != .
+mi passive: replace diabetes = 1 if N31bdiabetesmellitus == 1 
+mi passive: replace diabetes = 1 if f35fastingglucoselevel_new >=7 & f35fastingglucoselevel_new !=.
+
+label var diabetes "Diabetes"
+label define diabetes 0"Normal" 1"Diabetes"
+label value diabetes diabetes diabetes
+
+*-------------------------------------------------------------------------------
+
+*BMI
+
+drop bmi_new
+mi passive: gen bmi = weight/(ht_m_new^2)
+label var bmi "BMI"
+
+*BMI Categories
+drop bmi_cat
+mi passive: gen bmi_cat = . 
+mi passive: replace bmi_cat = 0 if bmi >=18.50 & bmi <25.00 & bmi !=. // Normal
+mi passive: replace bmi_cat = 1 if bmi <18.50 & bmi != . // Underweight
+mi passive: replace bmi_cat = 2 if bmi >=25.00 & bmi <30.00 & bmi !=. // Pre-Obese
+mi passive: replace bmi_cat = 3 if bmi >=30.00 & bmi !=. // Obese
+label var bmi_cat "BMI Categories"
+label define bmi_cat 0"Normal" 1"Underweight" 2"Pre-obese" 3"Obese"
+label value bmi_cat bmi_cat
+
+*-------------------------------------------------------------------------------
+
 *Obtaining estimates for CKD variables
 
 **CKD
@@ -357,3 +464,29 @@ mi estimate: svy: proportion ckd, missing over(age_cat)
 mi estimate: svy: proportion ckd, missing over(N12observedsex01 age_cat)
 
 *-------------------------------------------------------------------------------
+
+*GFR Bivariate models
+
+foreach x in bmi i.bmi_cat f35fastingglucoselevel_new f39glycohbresult_new ///
+			 f36totalcholesterollevels_new i.education i.possess_cat3 ///
+			 mn23sbp_new mn23dbp_new ///
+			 i.htn i.diabetes i.smoking_status {
+
+mi estimate: svy: regress egfr `x'
+mi estimate: mixed egfr `x' || parish_new: || ed_new_rev:
+}
+
+*-------------------------------------------------------------------------------
+
+
+*CKD Bivariate models
+
+foreach x in bmi i.bmi_cat f35fastingglucoselevel_new f39glycohbresult_new ///
+			 f36totalcholesterollevels_new i.education i.possess_cat3 ///
+			 mn23sbp_new mn23dbp_new ///
+			 i.htn i.diabetes i.smoking_status {
+
+mi estimate, or: svy: logistic ckd `x', or
+mi estimate, or : melogit ckd `x' || parish_new: || ed_new_rev:, or
+}
+
