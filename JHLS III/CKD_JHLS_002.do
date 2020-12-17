@@ -48,7 +48,7 @@ local outputpath "/Users/kernrocke/OneDrive - The University of the West Indies/
 *-------------------------------------------------------------------------------
 
 *Open log file to store results
-log using "`logpath'/Log/CKD_JHLS_001.2og",  replace
+log using "`logpath'/Log/CKD_JHLS_002.log",  replace
 
 *-------------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ save "`datapath'/Data/Unadjusted_equiplot_CKD.dta", replace
             graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
             bgcolor(white) 
 			
-			title("Undjusted", c(black) size(medium))
+			title("Unadjusted", c(black) size(medium))
           
 			
 			xscale(fill)
@@ -213,5 +213,11 @@ save "`datapath'/Data/Adjusted_equiplot_CKD.dta", replace
 				size(vsmall) color(black) ring(3.5) span)
 		
                ;
-#delimit cr		
+#delimit cr	
+
+*Export graph
+graph export "`outputpath'/Graphs/CKD_Prevalence.png", as(png) replace
+
+*-------------------------------------------------------------------------------
+
 
