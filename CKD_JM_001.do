@@ -26,35 +26,35 @@ set linesize 150
 ** Dataset to encrypted location
 
 *WINDOWS OS
-local datapath "X:/OneDrive - The UWI - Cave Hill Campus"
+*local datapath "X:/OneDrive - The UWI - Cave Hill Campus"
 
 *MAC OS
-*local datapath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
+local datapath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
 
 *-------------------------------------------------------------------------------
 
 ** Logfiles to unencrypted location
 
 *WINDOWS
-local logpath "X:/OneDrive - The UWI - Cave Hill Campus"
+*local logpath "X:/OneDrive - The UWI - Cave Hill Campus"
 
 *MAC OS
-*local logpath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
+local logpath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
 
 *-------------------------------------------------------------------------------
 
 **Aggregated output path
 
 *WINDOWS
-local outputpath "X:/OneDrive - The UWI - Cave Hill Campus"
+*local outputpath "X:/OneDrive - The UWI - Cave Hill Campus"
 
 *MAC OS
-*local outputpath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
+local outputpath "/Volumes/Secomba/kernrocke/Boxcryptor/OneDrive - The University of the West Indies"
 
 *-------------------------------------------------------------------------------
 
 *Open log file to store results
-log using "`logpath'/Manuscripts/Renal Function/Data/3-output/CKD_JM_001.log",  replace
+*log using "`logpath'/Manuscripts/Renal Function/Data/3-output/CKD_JM_001.log",  replace
 
 *-------------------------------------------------------------------------------
 *-------------------------------------------------------------------------------
