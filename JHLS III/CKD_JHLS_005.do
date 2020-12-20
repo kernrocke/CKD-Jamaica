@@ -57,6 +57,17 @@ log using "`logpath'/Log/CKD_JHLS_005_0.log",  replace
 
 *-------------------------------------------------------------------------------
 
+/*
+Preamble
+This algorithm focuses on conducting senstiviity analyses for the association between
+eGFR/CKD and known predictors.
+
+Senstivity models are as follows:
+1) ANCOVA - Analysis of Covariance
+2) Unadjusted linear and logitstic regression models
+3) Survey adjusted linear and logistic regression models
+4) Multi-Level linear and logistic regression models
+
 *****************************eGFR***********************************************
 
 *eGRR (Non sex specific)
