@@ -84,9 +84,9 @@ save "`datapath'/Data/Unadjusted_equiplot_CKD.dta", replace
 
 	graph twoway
 		(rspike CKDFemale CKDMale Age, hor lc(gs6) lw(0.25))
-		(sc Age CKDMale , msize(3) m(o) mlc(gs0) mfc("blue") mlw(0.1))
-        (sc Age CKDFemale , msize(3) m(o) mlc(gs0) mfc("red") mlw(0.1))
-        (sc Age CKDBoth , msize(3) m(o) mlc(gs0) mfc("green") mlw(0.1))
+		(sc Age CKDMale , msize(2) m(o) mlc(gs0) mfc("blue") mlw(0.1))
+        (sc Age CKDFemale , msize(2) m(o) mlc(gs0) mfc("red") mlw(0.1))
+        (sc Age CKDBoth , msize(2) m(o) mlc(gs0) mfc("green") mlw(0.1))
 		
 		,
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -156,9 +156,9 @@ save "`datapath'/Data/Adjusted_equiplot_CKD.dta", replace
 
 	graph twoway
 		(rspike CKDFemale CKDMale Age, hor lc(gs6) lw(0.25))
-		(sc Age CKDMale , msize(3) m(o) mlc(gs0) mfc("blue") mlw(0.1))
-        (sc Age CKDFemale , msize(3) m(o) mlc(gs0) mfc("red") mlw(0.1))
-        (sc Age CKDBoth , msize(3) m(o) mlc(gs0) mfc("green") mlw(0.1))
+		(sc Age CKDMale , msize(2) m(o) mlc(gs0) mfc("blue") mlw(0.1))
+        (sc Age CKDFemale , msize(2) m(o) mlc(gs0) mfc("red") mlw(0.1))
+        (sc Age CKDBoth , msize(2) m(o) mlc(gs0) mfc("green") mlw(0.1))
 		
 		,
             plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
@@ -220,4 +220,172 @@ graph export "`outputpath'/Graphs/CKD_Prevalence.png", as(png) replace
 
 *-------------------------------------------------------------------------------
 
+*-------------------------------------------------------------------------------
 
+*Load in data
+import excel "`datapath'/Data/ckd.xlsx", sheet("Sheet2") firstrow clear
+
+*Convert CKD proportion to percentages
+replace Estimate = Estimate*100
+rename Estimate CKD
+
+*Analyze by gender
+keep if Sex == "Male"
+
+*Reshape Data
+reshape wide CKD, i(Disease) j(Type) string
+
+*Create age categories variable
+gen disease = . 
+replace disease = 1 if Disease == "Hypertension"
+replace disease = 2 if Disease == "Heart Disease"
+replace disease = 3 if Disease == "High Cholesterol"
+replace disease = 4 if Disease == "High Triglycerides"
+replace disease = 5 if Disease == "Diabetes"
+replace disease = 6 if Disease == "Pre-Obese"
+replace disease = 7 if Disease == "Obese"
+replace disease = 8 if Disease == "Sickle Cell Disease"
+
+drop Disease
+rename disease Disease
+
+*Save dataset
+save "`datapath'/Data/Male_Disease_equiplot_CKD.dta", replace
+
+*-------------------------------------------------------------------------------
+*Equiplot
+#delimit;
+
+	graph twoway
+		(rspike CKDLi CKDUi Disease, hor lc(gs6) lw(0.25))
+		(rcap CKDLi CKDUi Disease, hor lc(gs6) lw(0.25))
+        (sc Disease CKDProportion , msize(2) m(circle) mlc(gs0) mfc("black") mlw(0.1))
+		
+		,
+            plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            bgcolor(white) 
+			
+			title("Male", c(black) size(medium))
+          
+			
+			xscale(fill)
+			xlab(0(10)70, labs(4) nogrid glc(gs16))
+			xtitle("Prevalence of CKD (%)", size(4) margin(l=2 r=2 t=5 b=2))
+			xmtick(0(10)70, tl(1.5))
+			
+			ylab(1"Hypertension" 2"Heart Disease" 3"High Cholesterol" 4"High Triglycerides" 5"Diabetes" 6"Pre-Obese"
+				 7"Obese" 8"Sickle Cell Disease"
+			,
+			angle(0) nogrid glc(gs16))
+			ytitle("", size(2.5) margin(l=2 r=5 t=2 b=2)) 
+			yscale(reverse)
+			
+			legend(off)
+			
+			name(Male_CKD)
+			saving("`outputpath'/Graphs/Male_CKD_Disease", replace)
+			
+               ;
+#delimit cr
+
+*-------------------------------------------------------------------------------
+
+*-------------------------------------------------------------------------------
+
+*Load in data
+import excel "`datapath'/Data/ckd.xlsx", sheet("Sheet2") firstrow clear
+
+*Convert CKD proportion to percentages
+replace Estimate = Estimate*100
+rename Estimate CKD
+
+*Analyze by gender
+keep if Sex == "Female"
+
+*Reshape Data
+reshape wide CKD, i(Disease) j(Type) string
+
+*Create age categories variable
+gen disease = . 
+replace disease = 1 if Disease == "Hypertension"
+replace disease = 2 if Disease == "Heart Disease"
+replace disease = 3 if Disease == "High Cholesterol"
+replace disease = 4 if Disease == "High Triglycerides"
+replace disease = 5 if Disease == "Diabetes"
+replace disease = 6 if Disease == "Pre-Obese"
+replace disease = 7 if Disease == "Obese"
+replace disease = 8 if Disease == "Sickle Cell Disease"
+
+drop Disease
+rename disease Disease
+
+*Save dataset
+save "`datapath'/Data/Male_Disease_equiplot_CKD.dta", replace
+
+*-------------------------------------------------------------------------------
+*Equiplot
+#delimit;
+
+	graph twoway
+		(rspike CKDLi CKDUi Disease, hor lc(gs6) lw(0.25))
+		(rcap CKDLi CKDUi Disease, hor lc(gs6) lw(0.25))
+        (sc Disease CKDProportion , msize(2) m(circle) mlc(gs0) mfc("black") mlw(0.1))
+		
+		,
+            plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin)) 
+            bgcolor(white) 
+			
+			title("Female", c(black) size(medium))
+          
+			
+			xscale(fill)
+			xlab(0(10)70, labs(4) nogrid glc(gs16))
+			xtitle("Prevalence of CKD (%)", size(4) margin(l=2 r=2 t=5 b=2))
+			xmtick(0(10)70, tl(1.5))
+			
+			ylab(1"Hypertension" 2"Heart Disease" 3"High Cholesterol" 4"High Triglycerides" 5"Diabetes" 6"Pre-Obese"
+				 7"Obese" 8"Sickle Cell Disease"
+			,
+			angle(0) nogrid glc(gs16))
+			ytitle("", size(2.5) margin(l=2 r=5 t=2 b=2)) 
+			yscale(reverse)
+			
+			legend(off)
+			
+			name(Female_CKD)
+			saving("`outputpath'/Graphs/Female_CKD_Disease", replace)
+			
+               ;
+#delimit cr
+
+*-------------------------------------------------------------------------------
+
+
+*Combine Graphs
+
+#delimit;
+		graph combine
+		"`outputpath'/Graphs/Female_CKD_Disease"
+		"`outputpath'/Graphs/Male_CKD_Disease"
+		,
+		
+		plotregion(c(gs16) ic(gs16) ilw(thin) lw(thin)) 
+        graphregion(color(gs16) ic(gs16) ilw(thin) lw(thin))
+		
+		col(2)
+		
+		name(combined_Disease)
+		caption("Note: Adjusted using Survey weight accounting for population sex and age distribution"
+				"Black cirecle- Prevalence estimate; Caps represent 95% CI"
+				, position(5) 
+				size(vsmall) color(black) ring(3.5) span)
+		
+               ;
+#delimit cr	
+
+*Export graph
+graph export "`outputpath'/Graphs/CKD_Disease_Status_Prevalence.png", as(png) replace
+
+*-------------------------------------------------------------------------------
