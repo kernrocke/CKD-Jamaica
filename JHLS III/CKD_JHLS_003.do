@@ -11,7 +11,7 @@ cls
 **  Analyst:		Kern Rocke
 **	Date Created:	17/12/2020
 **	Date Modified: 	17/12/2020
-**  Algorithm Task: Bivariable Regression Models
+**  Algorithm Task: Bivariable Regression Models (Un-imputed/Complete Case-Analysis)
 
 
 ** DO-FILE SET UP COMMANDS
@@ -62,7 +62,7 @@ log using "`logpath'/Log/CKD_JHLS_003_egfr.log",  replace
 
 foreach x in i.N12observedsex01 age_last_bd i.age_cat ///
 			 bmi i.bmi_cat f35fastingglucoselevel_new f39glycohbresult_new ///
-			 f36totalcholesterollevels_new i.education i.possess_cat3 ///
+			 f36totalcholesterollevels_new ib3.education ib3.possess_cat3 ///
 			 mn23sbp_new mn23dbp_new ///
 			 i.htn i.diabetes i.smoking_status {
 			 
@@ -94,7 +94,7 @@ log using "`logpath'/Log/CKD_JHLS_003_ckd.log",  replace
 
 foreach x in i.N12observedsex01 age_last_bd i.age_cat ///
 			 bmi i.bmi_cat f35fastingglucoselevel_new f39glycohbresult_new ///
-			 f36totalcholesterollevels_new i.education i.possess_cat3 ///
+			 f36totalcholesterollevels_new ib3.education ib3.possess_cat3 ///
 			 mn23sbp_new mn23dbp_new ///
 			 i.htn i.diabetes i.smoking_status {
 			 
