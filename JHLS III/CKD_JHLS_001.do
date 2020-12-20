@@ -222,6 +222,38 @@ tab diabetes , miss
 
 *-------------------------------------------------------------------------------
 
+*BMI
+
+drop bmi_new
+gen bmi = weight/(ht_m_new^2)
+label var bmi "BMI"
+
+*BMI Categories
+drop bmi_cat
+gen bmi_cat = . 
+replace bmi_cat = 0 if bmi >=18.50 & bmi <25.00 & bmi !=. // Normal
+replace bmi_cat = 1 if bmi <18.50 & bmi != . // Underweight
+replace bmi_cat = 2 if bmi >=25.00 & bmi <30.00 & bmi !=. // Pre-Obese
+replace bmi_cat = 3 if bmi >=30.00 & bmi !=. // Obese
+label var bmi_cat "BMI Categories"
+label define bmi_cat 0"Normal" 1"Underweight" 2"Pre-obese" 3"Obese"
+label value bmi_cat bmi_cat
+
+*Sickle Cell disease
+gen sickle =. 
+replace sickle = 1 if N31ssicklecelltrait == 1 | N31rcicklecelldisease == 1
+replace sickle = 0 if N31ssicklecelltrait == 0 & N31rcicklecelldisease == 0
+
+label var sickle "Sickle Cell Disease"
+label define sickle 0"Normal" 1"Sickle Cell disease"
+label value sickle sickle
+
+*-------------------------------------------------------------------------------
+*Save dataset
+save "`datapath'/Data/CKD_JHLS_III.dta", replace
+
+*-------------------------------------------------------------------------------
+
 *Create variable for non-missing and missing on the main outcome of interest (eGFR)
 gen gfr_miss = .
 replace gfr_miss = 0 if egfr != .
@@ -231,7 +263,7 @@ label define gfr_miss 0"Non-missing" 1"Missing"
 label value gfr_miss gfr_miss
 
 *Check for differences in intended imputed variables acrossing missing categories
-foreach x in bmi_new f36totalcholesterollevels_new {
+foreach x in bmi f36totalcholesterollevels_new {
 ttest `x', by(gfr_miss)
 	}
 
@@ -240,13 +272,13 @@ tab `y' gfr_miss, col chi2
 		}
 
 *Create missing indicator for variables to be imputed
-gen miss_impute = missing(bmi_new, f36totalcholesterollevels_new, education, possess_cat3, ///
+gen miss_impute = missing(bmi, f36totalcholesterollevels_new, education, possess_cat3, ///
 						 Microalbuminmg_yn_20, htn)
 tab miss_impute if egfr!=.
 
 *ttest looking at differnces
 #delimit;
-for var bmi_new f36totalcholesterollevels_new: 
+for var bmi f36totalcholesterollevels_new: 
 		ttest X if egfr != . , by(miss_impute) unequal
 ;
 #delimit cr
@@ -280,11 +312,11 @@ n1012smokeanytobaccocigaret
 *							DATASET with One IMPUTATION							
 
 *Distribution of missing data for key variables
-misstable summarize bmi_new f36totalcholesterollevels_new education possess_cat3 ///
+misstable summarize bmi f36totalcholesterollevels_new education possess_cat3 ///
 					Microalbuminmg_yn_20 htn smoking_status diabetes ///
 					f35fastingglucoselevel_new f39glycohbresult_new ///
 					N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
-					mn23dbp_new N31dhighbloodpressure if egfr!=.
+					mn23dbp_new N31dhighbloodpressure sickle if egfr!=.
 					
 *Prepare dataset for imputation
 mi set flong
@@ -294,23 +326,24 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 
 
 *Register dataset for imputation
- mi register imputed  bmi_new f36totalcholesterollevels_new education possess_cat3 ///
+ mi register imputed  bmi f36totalcholesterollevels_new education possess_cat3 ///
 					  Microalbuminmg_yn_20 htn smoking_status diabetes ///
 					  f35fastingglucoselevel_new f39glycohbresult_new ///
 					  N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
-					  mn23dbp_new N31dhighbloodpressure
+					  mn23dbp_new N31dhighbloodpressure sickle
 					  
 *Setting seed for reproducability of results
  set seed 1234 
 
 *Imputation using complex chained equations
- mi impute  chained (regress) bmi_new (regress) f36totalcholesterollevels_new ///
+ mi impute  chained (regress) bmi (regress) f36totalcholesterollevels_new ///
 					(ologit) education (ologit) possess_cat3  ///
 					(logit) Microalbuminmg_yn_20 (logit) htn (ologit) smoking_status ///
 				    (regress) f35fastingglucoselevel_new ///
 					(regress) f39glycohbresult_new (ologit) N31bdiabetesmellitus ///
 					(regress) ht_m_new (regress) weight (regress) mn23sbp_new ///
 					(regress) mn23dbp_new (ologit) N31dhighbloodpressure ///
+					(logit) sickle ///
 					= egfr N12observedsex01 age_last_bd if egfr!=. , ///
 					add(1) augment ///
 					savetrace("`datapath'/Data/ckd_impute_1", replace) ///
@@ -325,11 +358,11 @@ drop if mi_m != 0
 drop mi_*
 
 *Distribution of missing data for key variables
-misstable summarize bmi_new f36totalcholesterollevels_new education possess_cat3 ///
+misstable summarize bmi f36totalcholesterollevels_new education possess_cat3 ///
 					Microalbuminmg_yn_20 htn smoking_status diabetes ///
 					f35fastingglucoselevel_new f39glycohbresult_new ///
 					N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
-					mn23dbp_new N31dhighbloodpressure if egfr!=.
+					mn23dbp_new N31dhighbloodpressure sickle if egfr!=.
 					
 *Prepare dataset for imputation
 mi set flong
@@ -339,23 +372,24 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 
 
 *Register dataset for imputation
- mi register imputed  bmi_new f36totalcholesterollevels_new education possess_cat3 ///
+ mi register imputed  bmi f36totalcholesterollevels_new education possess_cat3 ///
 					  Microalbuminmg_yn_20 htn smoking_status diabetes ///
 					  f35fastingglucoselevel_new f39glycohbresult_new ///
 					  N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
-					  mn23dbp_new N31dhighbloodpressure
+					  mn23dbp_new N31dhighbloodpressure sickle
 					  
 *Setting seed for reproducability of results
  set seed 1234 
 
 *Imputation using complex chained equations
- mi impute  chained (regress) bmi_new (regress) f36totalcholesterollevels_new ///
+ mi impute  chained (regress) bmi (regress) f36totalcholesterollevels_new ///
 					(ologit) education (ologit) possess_cat3  ///
 					(logit) Microalbuminmg_yn_20 (logit) htn (ologit) smoking_status ///
 				    (regress) f35fastingglucoselevel_new ///
 					(regress) f39glycohbresult_new (ologit) N31bdiabetesmellitus ///
 					(regress) ht_m_new (regress) weight (regress) mn23sbp_new ///
 					(regress) mn23dbp_new (ologit) N31dhighbloodpressure ///
+					(logit) sickle ///
 					= egfr N12observedsex01 age_last_bd if egfr!=. ,  ///
 					add(43) augment ///
 					savetrace("`datapath'/Data/ckd_impute_43", replace) ///
@@ -435,7 +469,7 @@ label value diabetes diabetes diabetes
 
 *BMI
 
-drop bmi_new
+drop bmi
 mi passive: gen bmi = weight/(ht_m_new^2)
 label var bmi "BMI"
 
@@ -470,21 +504,25 @@ mi estimate: svy: proportion ckd, missing over(N12observedsex01 age_cat)
 foreach x in bmi i.bmi_cat f35fastingglucoselevel_new f39glycohbresult_new ///
 			 f36totalcholesterollevels_new i.education i.possess_cat3 ///
 			 mn23sbp_new mn23dbp_new ///
-			 i.htn i.diabetes i.smoking_status {
+			 i.htn i.diabetes i.smoking_status  i.sickle{
 
 mi estimate: svy: regress egfr `x'
 mi estimate: mixed egfr `x' || parish_new: || ed_new_rev:
 }
 
-*-------------------------------------------------------------------------------
 
+*-------------------------------------------------------------------------------
+*Save dataset
+save "`datapath'/Data/CKD_JHLS_III_MI_43.dta", replace
+
+*-------------------------------------------------------------------------------
 
 *CKD Bivariate models
 
 foreach x in bmi i.bmi_cat f35fastingglucoselevel_new f39glycohbresult_new ///
 			 f36totalcholesterollevels_new i.education i.possess_cat3 ///
 			 mn23sbp_new mn23dbp_new ///
-			 i.htn i.diabetes i.smoking_status {
+			 i.htn i.diabetes i.smoking_status i.sickle {
 
 mi estimate, or: svy: logistic ckd `x', or
 mi estimate, or : melogit ckd `x' || parish_new: || ed_new_rev:, or
