@@ -248,6 +248,28 @@ label var sickle "Sickle Cell Disease"
 label define sickle 0"Normal" 1"Sickle Cell disease"
 label value sickle sickle
 
+*High Cholesterol
+gen high_chol = . 
+replace high_chol = 1 if f36totalcholesterollevels_new >=5.2 & f36totalcholesterollevels_new !=.
+replace high_chol = 0 if f36totalcholesterollevels_new <5.2 & N31ehighcholesterol == 0
+replace high_chol = . if f36totalcholesterollevels_new == .
+replace high_chol = 1 if N31ehighcholesterol == 1
+
+label var high_chol "High Cholesterol"
+label define high_chol 0"Normal" 1"High Cholesterol"
+label value high_chol high_chol
+
+*High Triglycerides
+gen high_trig = . 
+replace high_trig = 1 if f38triglyceridelevels_new >=1.8 & f38triglyceridelevels_new !=.
+replace high_trig = 0 if f38triglyceridelevels_new <1.8
+replace high_trig = . if f38triglyceridelevels_new == .
+
+label var high_trig "High Triglycerides"
+label define high_trig 0"Normal" 1"High Triglycerides"
+label value high_trig high_trig
+
+
 *-------------------------------------------------------------------------------
 *Save dataset
 save "`datapath'/Data/CKD_JHLS_III.dta", replace
@@ -263,7 +285,8 @@ label define gfr_miss 0"Non-missing" 1"Missing"
 label value gfr_miss gfr_miss
 
 *Check for differences in intended imputed variables acrossing missing categories
-foreach x in bmi f36totalcholesterollevels_new {
+foreach x in bmi f36totalcholesterollevels_new f36totalcholesterollevels_new ///
+			 f38triglyceridelevels_new{
 ttest `x', by(gfr_miss)
 	}
 
@@ -273,12 +296,12 @@ tab `y' gfr_miss, col chi2
 
 *Create missing indicator for variables to be imputed
 gen miss_impute = missing(bmi, f36totalcholesterollevels_new, education, possess_cat3, ///
-						 Microalbuminmg_yn_20, htn)
+						 Microalbuminmg_yn_20, htn, f38triglyceridelevels_new)
 tab miss_impute if egfr!=.
 
 *ttest looking at differnces
 #delimit;
-for var bmi f36totalcholesterollevels_new: 
+for var bmi f36totalcholesterollevels_new f38triglyceridelevels_new: 
 		ttest X if egfr != . , by(miss_impute) unequal
 ;
 #delimit cr
@@ -302,6 +325,7 @@ Variables to impute:
 
 bmi_new
 f36totalcholesterollevels_new
+f38triglyceridelevels_new
 education
 possess_cat3
 n1012smokeanytobaccocigaret
@@ -316,7 +340,8 @@ misstable summarize bmi f36totalcholesterollevels_new education possess_cat3 ///
 					Microalbuminmg_yn_20 htn smoking_status diabetes ///
 					f35fastingglucoselevel_new f39glycohbresult_new ///
 					N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
-					mn23dbp_new N31dhighbloodpressure sickle if egfr!=.
+					mn23dbp_new N31dhighbloodpressure f38triglyceridelevels_new ///
+					sickle if egfr!=.
 					
 *Prepare dataset for imputation
 mi set flong
@@ -330,7 +355,8 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 					  Microalbuminmg_yn_20 htn smoking_status diabetes ///
 					  f35fastingglucoselevel_new f39glycohbresult_new ///
 					  N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
-					  mn23dbp_new N31dhighbloodpressure sickle
+					  mn23dbp_new N31dhighbloodpressure sickle ////
+					  f38triglyceridelevels_new 
 					  
 *Setting seed for reproducability of results
  set seed 1234 
@@ -344,6 +370,7 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 					(regress) ht_m_new (regress) weight (regress) mn23sbp_new ///
 					(regress) mn23dbp_new (ologit) N31dhighbloodpressure ///
 					(logit) sickle ///
+					(regress) f38triglyceridelevels_new ///
 					= egfr N12observedsex01 age_last_bd if egfr!=. , ///
 					add(1) augment ///
 					savetrace("`datapath'/Data/ckd_impute_1", replace) ///
@@ -362,7 +389,8 @@ misstable summarize bmi f36totalcholesterollevels_new education possess_cat3 ///
 					Microalbuminmg_yn_20 htn smoking_status diabetes ///
 					f35fastingglucoselevel_new f39glycohbresult_new ///
 					N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
-					mn23dbp_new N31dhighbloodpressure sickle if egfr!=.
+					mn23dbp_new N31dhighbloodpressure sickle ///
+					f38triglyceridelevels_new if egfr!=.
 					
 *Prepare dataset for imputation
 mi set flong
@@ -376,7 +404,8 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 					  Microalbuminmg_yn_20 htn smoking_status diabetes ///
 					  f35fastingglucoselevel_new f39glycohbresult_new ///
 					  N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
-					  mn23dbp_new N31dhighbloodpressure sickle
+					  mn23dbp_new N31dhighbloodpressure sickle ////
+					  f38triglyceridelevels_new 
 					  
 *Setting seed for reproducability of results
  set seed 1234 
@@ -390,6 +419,7 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 					(regress) ht_m_new (regress) weight (regress) mn23sbp_new ///
 					(regress) mn23dbp_new (ologit) N31dhighbloodpressure ///
 					(logit) sickle ///
+					(regress) f38triglyceridelevels_new ///
 					= egfr N12observedsex01 age_last_bd if egfr!=. ,  ///
 					add(43) augment ///
 					savetrace("`datapath'/Data/ckd_impute_43", replace) ///
@@ -484,6 +514,27 @@ label var bmi_cat "BMI Categories"
 label define bmi_cat 0"Normal" 1"Underweight" 2"Pre-obese" 3"Obese"
 label value bmi_cat bmi_cat
 
+*High Cholesterol
+drop high_chol
+mi passive: gen high_chol = . 
+mi passive: replace high_chol = 1 if f36totalcholesterollevels_new >=5.2 & f36totalcholesterollevels_new !=.
+mi passive: replace high_chol = 0 if f36totalcholesterollevels_new <5.2 & N31ehighcholesterol == 0
+mi passive: replace high_chol = . if f36totalcholesterollevels_new == .
+mi passive: replace high_chol = 1 if N31ehighcholesterol == 1
+label var high_chol "High Cholesterol"
+label define high_chol 0"Normal" 1"High Cholesterol"
+label value high_chol high_chol
+
+*High Triglycerides
+drop high_trig
+mi passive: gen high_trig = . 
+mi passive: replace high_trig = 1 if f38triglyceridelevels_new >=1.8 & f38triglyceridelevels_new !=.
+mi passive: replace high_trig = 0 if f38triglyceridelevels_new <1.8
+mi passive: replace high_trig = . if f38triglyceridelevels_new == .
+label var high_trig "High Triglycerides"
+label define high_trig 0"Normal" 1"High Triglycerides"
+label value high_trig high_trig
+
 *-------------------------------------------------------------------------------
 
 *Obtaining estimates for CKD variables
@@ -498,22 +549,24 @@ mi estimate: svy: proportion ckd, missing over(age_cat)
 mi estimate: svy: proportion ckd, missing over(N12observedsex01 age_cat)
 
 *-------------------------------------------------------------------------------
+*Save dataset
+save "`datapath'/Data/CKD_JHLS_III_MI_43.dta", replace
+
+*-------------------------------------------------------------------------------
 
 *GFR Bivariate models
 
 foreach x in bmi i.bmi_cat f35fastingglucoselevel_new f39glycohbresult_new ///
 			 f36totalcholesterollevels_new i.education i.possess_cat3 ///
 			 mn23sbp_new mn23dbp_new ///
-			 i.htn i.diabetes i.smoking_status  i.sickle{
+			 i.htn i.diabetes i.smoking_status i.sickle /// 
+			 f38triglyceridelevels_new i.high_trig ///
+			 f36totalcholesterollevels_new i.high_chol{
 
 mi estimate: svy: regress egfr `x'
 mi estimate: mixed egfr `x' || parish_new: || ed_new_rev:
 }
 
-
-*-------------------------------------------------------------------------------
-*Save dataset
-save "`datapath'/Data/CKD_JHLS_III_MI_43.dta", replace
 
 *-------------------------------------------------------------------------------
 
