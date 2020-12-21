@@ -356,7 +356,7 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 					  f35fastingglucoselevel_new f39glycohbresult_new ///
 					  N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
 					  mn23dbp_new N31dhighbloodpressure sickle ////
-					  f38triglyceridelevels_new 
+					  f38triglyceridelevels_new N31ehighcholesterol
 					  
 *Setting seed for reproducability of results
  set seed 1234 
@@ -369,7 +369,7 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 					(regress) f39glycohbresult_new (ologit) N31bdiabetesmellitus ///
 					(regress) ht_m_new (regress) weight (regress) mn23sbp_new ///
 					(regress) mn23dbp_new (ologit) N31dhighbloodpressure ///
-					(logit) sickle ///
+					(logit) sickle (ologit) N31ehighcholesterol ///
 					(regress) f38triglyceridelevels_new ///
 					= egfr N12observedsex01 age_last_bd if egfr!=. , ///
 					add(1) augment ///
@@ -405,7 +405,7 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 					  f35fastingglucoselevel_new f39glycohbresult_new ///
 					  N31bdiabetesmellitus ht_m_new weight mn23sbp_new ///
 					  mn23dbp_new N31dhighbloodpressure sickle ////
-					  f38triglyceridelevels_new 
+					  f38triglyceridelevels_new N31ehighcholesterol
 					  
 *Setting seed for reproducability of results
  set seed 1234 
@@ -418,7 +418,7 @@ mi svyset psu_1 [pweight= sampwt_1_adj], strata(postrata) vce(linearized) single
 					(regress) f39glycohbresult_new (ologit) N31bdiabetesmellitus ///
 					(regress) ht_m_new (regress) weight (regress) mn23sbp_new ///
 					(regress) mn23dbp_new (ologit) N31dhighbloodpressure ///
-					(logit) sickle ///
+					(logit) sickle (ologit) N31ehighcholesterol ///
 					(regress) f38triglyceridelevels_new ///
 					= egfr N12observedsex01 age_last_bd if egfr!=. ,  ///
 					add(43) augment ///
