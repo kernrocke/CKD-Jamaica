@@ -28,21 +28,21 @@ set linesize 150
 ** Dataset to encrypted location
 
 *MAC OS
-local datapath "/Users/kernrocke/OneDrive - The University of the West Indies/Manuscripts/CKD JHLS"
+local datapath "/Users/kernrocke/OneDrive - The UWI - Cave Hill Campus/Manuscripts/CKD JHLS"
 
 *-------------------------------------------------------------------------------
 
 ** Logfiles to unencrypted location
 
 *MAC OS
-local logpath "/Users/kernrocke/OneDrive - The University of the West Indies/Manuscripts/CKD JHLS"
+local logpath "/Users/kernrocke/OneDrive - The UWI - Cave Hill Campus/Manuscripts/CKD JHLS"
 
 *-------------------------------------------------------------------------------
 
 **Aggregated output path
 
 *MAC OS
-local outputpath "/Users/kernrocke/OneDrive - The University of the West Indies/Manuscripts/CKD JHLS"
+local outputpath "/Users/kernrocke/OneDrive - The UWI - Cave Hill Campus/Manuscripts/CKD JHLS"
 
 *-------------------------------------------------------------------------------
 
